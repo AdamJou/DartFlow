@@ -9,6 +9,7 @@ import {
 import logos from "../images/logo-small.png";
 import { MentorOffer } from "../sites/MentorOffer";
 import { log } from "console";
+import { Link, Route, Routes } from "react-router-dom"
 
 export const MuiNavbar = () => {
   return (
@@ -30,20 +31,20 @@ export const MuiNavbar = () => {
         ></Typography>
 
         <Stack direction="row" spacing={5}>
-          <Button color="inherit" href="/login">
-            Zaloguj
+          <Button color="inherit">
+            <Link to="/login">Zaloguj</Link>
           </Button>
-          <Button color="inherit" href="/jobOffer">
-            Oferty pracy
+          <Button color="inherit">
+            <Link to="/jobOffer">Oferta Pracy</Link>
           </Button>
-          <Button color="inherit" href="/mentorOffer">
-            Oferty mentora
+          <Button color="inherit">
+            <Link to="/mentorOffer">Oferty Mentora</Link>
           </Button>
           <Button color="inherit" href="/menteeOffer">
-            Szukam mentora
+            <Link to="/menteeOffer">Szukam Mentora</Link>
           </Button>
           <Button color="inherit" href="/contact">
-            Kontakt
+            <Link to="/contact">Kontakt</Link>
           </Button>
         </Stack>
       </Toolbar>
