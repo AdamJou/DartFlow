@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

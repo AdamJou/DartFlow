@@ -8,6 +8,7 @@ import { MuiNavbar } from "./components/MuiNavbar";
 import { MuiRegister } from "./components/MuiRegister";
 import { MuiLogin } from "./components/MuiLogin";
 import { Route, Routes } from "react-router-dom";
+import { Calendar } from "./components/Calendar";
 
 function App() {
   let component;
@@ -27,6 +28,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<MuiRegister />} />
         <Route path="/login" element={<MuiLogin />} />
+        <Route path="/calendar" element={<Calendar />} />
       </Routes>
       
       

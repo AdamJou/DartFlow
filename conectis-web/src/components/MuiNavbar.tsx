@@ -40,11 +40,14 @@ export const MuiNavbar = () => {
           <Button color="inherit">
             <Link to="/mentorOffer">Oferty Mentora</Link>
           </Button>
-          <Button color="inherit" href="/menteeOffer">
+          <Button color="inherit">
             <Link to="/menteeOffer">Szukam Mentora</Link>
           </Button>
-          <Button color="inherit" href="/contact">
+          <Button color="inherit">
             <Link to="/contact">Kontakt</Link>
+          </Button>
+          <Button color="inherit">
+            <Link to="/calendar">Kalendarz</Link>
           </Button>
         </Stack>
       </Toolbar>
