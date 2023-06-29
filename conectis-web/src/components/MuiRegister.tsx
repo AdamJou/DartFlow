@@ -5,10 +5,10 @@ import {
   TextField,
   Grid,
   Paper,
-  Link,
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export const MuiRegister = () => {
   const [tname, setName] = useState("");
@@ -96,7 +96,7 @@ export const MuiRegister = () => {
             </Button>
             <Typography align="center">
               Masz już konto?<br></br>
-              <Link href="/login">Zaloguj się</Link>
+              <Link to="/login">Zaloguj się</Link>
             </Typography>
           </Stack>
         </Paper>

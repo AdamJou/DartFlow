@@ -13,31 +13,7 @@ function App() {
   let component;
   console.log(window.location);
   console.log(window.location.pathname);
-  /*
-  switch (window.location.pathname) {
-    case "/":
-      component = <Home />;
-      break;
-    case "/jobOffer":
-      component = <JobOffer />;
-      break;
-    case "/mentorOffer":
-      component = <MentorOffer />;
-      break;
-    case "/menteeOffer":
-      component = <MenteeOffer />;
-      break; 
-    case "/contact":
-      component = <Contact />;
-      break;
-    case "/register":
-      component = <MuiRegister />;
-      break;
-    case "/login":
-      component = <MuiLogin />;
-      break;
-  }
-  */
+  
   return (
     <>
       <MuiNavbar />
@@ -52,6 +28,8 @@ function App() {
         <Route path="/register" element={<MuiRegister />} />
         <Route path="/login" element={<MuiLogin />} />
       </Routes>
+      
+      
     </>
   );
 }
