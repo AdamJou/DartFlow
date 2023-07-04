@@ -19,3 +19,14 @@ code {
 .rbc-calendar {
   min-height: 580px;
 }
+
+.note-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 1rem;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+}
