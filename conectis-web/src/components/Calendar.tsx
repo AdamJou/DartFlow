@@ -1,40 +1,106 @@
+import React, { useState } from "react";
 import {
-    Calendar as BigCalendar,
-    CalendarProps,
-    momentLocalizer,
-    Views,
-    DateLocalizer
-} from 'react-big-calendar';
-import moment from 'moment';
-import React, { Fragment, useState, useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import event from 'events';
+  Calendar as BigCalendar,
+  CalendarProps,
+  momentLocalizer,
+} from "react-big-calendar";
+import moment from "moment";
+import "moment/locale/pl";
+
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
 
-class Event {
-    
+interface Note {
+  start: Date;
+  end: Date;
+  title: string;
 }
 
-const events = [
-    {
-        start: moment("2023-07-04T10:00:00").toDate(),
-        end: moment("2023-07-04T11:00:00").toDate(),
-        title: "notatka notatka hehehe"
-    },
-    {
-        start: moment("2023-07-04T13:30:00").toDate(),
-        end: moment("2023-07-04T15:30:00").toDate(),
-        title: "druga notatka"
-    },
-    {
-        start: moment("2023-07-04").toDate(),
-        end: moment("2023-07-04").toDate(),
-        title: "trzecia notatka"
+export function Calendar() {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [noteText, setNoteText] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [showNote, setShowNote] = useState(false);
+
+  const handleDateSelect = (slotInfo: any) => {
+    setSelectedSlot(slotInfo);
+    setSelectedDate(slotInfo.start);
+    setShowNote(true);
+  };
+
+  const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNoteText(event.target.value);
+  };
+
+  const handleStartTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setStartTime(event.target.value);
+  };
+
+  const handleEndTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndTime(event.target.value);
+  };
+
+  const handleAddNote = () => {
+    if (selectedDate && noteText && startTime && endTime) {
+      const startDateTime = moment(selectedDate).set(
+        "hour",
+        parseInt(startTime)
+      );
+      const endDateTime = moment(selectedDate).set("hour", parseInt(endTime));
+
+      const newNote: Note = {
+        start: startDateTime.toDate(),
+        end: endDateTime.toDate(),
+        title: noteText,
+      };
+      setNotes((prevNotes) => [...prevNotes, newNote]);
+      setSelectedSlot(null);
+      setSelectedDate(null);
+      setNoteText("");
+      setStartTime("");
+      setEndTime("");
+      setShowNote(false);
     }
+  };
 
-]
-
-export function Calendar(props: Omit<CalendarProps, 'localizer'>) {
-    return <BigCalendar {...props} localizer={localizer} events={events} />;
+  return (
+    <div>
+      <BigCalendar
+        localizer={localizer}
+        selectable
+        events={notes}
+        onSelectSlot={handleDateSelect}
+      />
+      {showNote && (
+        <div>
+          <h1>Wybrany dzień: {moment(selectedDate).format("DD/MM/YYYY")}</h1>
+          <input
+            type="text"
+            value={noteText}
+            onChange={handleNoteChange}
+            placeholder="Wpisz notatkę..."
+          />
+          <label>
+            Godzina rozpoczęcia:
+            <input
+              type="time"
+              value={startTime}
+              onChange={handleStartTimeChange}
+            />
+          </label>
+          <label>
+            Godzina zakończenia:
+            <input type="time" value={endTime} onChange={handleEndTimeChange} />
+          </label>
+          <button onClick={handleAddNote}>Dodaj notatkę</button>
+        </div>
+      )}
+    </div>
+  );
 }
