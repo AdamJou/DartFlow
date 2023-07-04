@@ -8,14 +8,24 @@ import moment from "moment";
 import "moment/locale/pl";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
 const localizer = momentLocalizer(moment);
+
+
+const ws = new WebSocket("ws://localhost:8082");
+
+ws.addEventListener("open", e => {
+    ws.send("dcode");
+})
+
+
 
 interface Note {
   start: Date;
   end: Date;
   title: string;
 }
+
+
 
 export function Calendar() {
   const [notes, setNotes] = useState<Note[]>([]);
