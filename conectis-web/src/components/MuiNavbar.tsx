@@ -31,15 +31,33 @@ export const MuiNavbar = () => {
     return location.pathname === route;
   };
 
-  const CustomLinkButton = (props: any) => {
-    const { to, children, underline, ...rest } = props;
+  const CustomLinkButton = (props: {
+    [x: string]: any;
+    to: any;
+    children: any;
+  }) => {
+    const { to, children, ...rest } = props;
+    const isActive = isActiveRoute(to);
+    const textColor = isActive ? "#a1c8fa" : "inherit";
+    const textDecoration = isActive ? "underline" : "none";
+    const offset = textDecoration ? "0.5em" : "0";
     return (
       <Button
         color="inherit"
         component={Link}
         to={to}
-        underline={isActiveRoute(to) ? "always" : underline}
-        sx={{ textAlign: "center", marginLeft: "0", minWidth: "min-content" }}
+        sx={{
+          textAlign: "center",
+          marginLeft: "0",
+          minWidth: "min-content",
+          color: textColor,
+          textDecoration: textDecoration,
+          textUnderlineOffset: offset,
+
+          "&:hover": {
+            color: "#EEE8AA",
+          },
+        }}
         {...rest}
       >
         {children}
@@ -64,25 +82,20 @@ export const MuiNavbar = () => {
           component="div"
           sx={{ flexGrow: 1 }}
         ></Typography>
-        <Stack direction="row" sx={{ display: { xs: "none", md: "flex" } }}>
-          <CustomLinkButton to="/login" underline="hover">
-            Zaloguj
-          </CustomLinkButton>
-          <CustomLinkButton to="/jobOffer" underline="hover">
-            Oferta Pracy
-          </CustomLinkButton>
-          <CustomLinkButton to="/mentorOffer" underline="hover">
-            Oferty Mentora
-          </CustomLinkButton>
-          <CustomLinkButton to="/menteeOffer" underline="hover">
-            Szukam Mentora
-          </CustomLinkButton>
-          <CustomLinkButton to="/contact" underline="hover">
-            Kontakt
-          </CustomLinkButton>
-          <CustomLinkButton to="/calendar" underline="hover">
-            Kalendarz
-          </CustomLinkButton>
+        <Stack
+          direction="row"
+          sx={{
+            display: { xs: "none", md: "flex" },
+            justifyContent: "space-around",
+            gap: "0.5rem",
+          }}
+        >
+          <CustomLinkButton to="/login">Zaloguj</CustomLinkButton>
+          <CustomLinkButton to="/jobOffer">Oferta Pracy</CustomLinkButton>
+          <CustomLinkButton to="/mentorOffer">Oferty Mentora</CustomLinkButton>
+          <CustomLinkButton to="/menteeOffer">Szukam Mentora</CustomLinkButton>
+          <CustomLinkButton to="/contact">Kontakt</CustomLinkButton>
+          <CustomLinkButton to="/calendar">Kalendarz</CustomLinkButton>
         </Stack>
         <IconButton
           size="large"
@@ -100,19 +113,62 @@ export const MuiNavbar = () => {
           <ListItem button component={Link} to="/login">
             <ListItemText primary="Zaloguj" />
           </ListItem>
-          <ListItem button component={Link} to="/jobOffer">
+          <ListItem
+            button
+            component={Link}
+            to="/jobOffer"
+            sx={{
+              backgroundColor: isActiveRoute("/jobOffer")
+                ? "yellow"
+                : "inherit",
+            }}
+          >
             <ListItemText primary="Oferta Pracy" />
           </ListItem>
-          <ListItem button component={Link} to="/mentorOffer">
+          <ListItem
+            button
+            component={Link}
+            to="/mentorOffer"
+            sx={{
+              backgroundColor: isActiveRoute("/mentorOffer")
+                ? "yellow"
+                : "inherit",
+            }}
+          >
             <ListItemText primary="Oferty Mentora" />
           </ListItem>
-          <ListItem button component={Link} to="/menteeOffer">
+          <ListItem
+            button
+            component={Link}
+            to="/menteeOffer"
+            sx={{
+              backgroundColor: isActiveRoute("/menteeOffer")
+                ? "yellow"
+                : "inherit",
+            }}
+          >
             <ListItemText primary="Szukam Mentora" />
           </ListItem>
-          <ListItem button component={Link} to="/contact">
+          <ListItem
+            button
+            component={Link}
+            to="/contact"
+            sx={{
+              backgroundColor: isActiveRoute("/contact") ? "yellow" : "inherit",
+            }}
+          >
             <ListItemText primary="Kontakt" />
           </ListItem>
-          <ListItem button component={Link} to="/calendar">
+          <ListItem
+            button
+            component={Link}
+            to="/calendar"
+            sx={{
+              backgroundColor: isActiveRoute("/calendar")
+                ? "yellow"
+                : "inherit",
+            }}
+          >
             <ListItemText primary="Kalendarz" />
           </ListItem>
         </List>
