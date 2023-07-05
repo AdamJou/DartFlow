@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Calendar as BigCalendar,
   CalendarProps,
@@ -39,6 +39,8 @@ export function Calendar() {
   const [showNote, setShowNote] = useState(false);
   const [noteText, setNoteText] = useState("");
 
+  const calendarRef = useRef<HTMLDivElement | null>(null);
+
   const handleDateSelect = (slotInfo: any) => {
     setSelectedSlot(slotInfo);
     setSelectedDate(slotInfo.start);
@@ -61,10 +63,6 @@ export function Calendar() {
     } else {
       setSelectedEndTime("");
     }
-  };
-
-  const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNoteText(event.target.value);
   };
 
   const handleAddNote = () => {
@@ -118,19 +116,34 @@ export function Calendar() {
     );
   };
 
-  const [value, setValue] = React.useState<Dayjs | null>(
-    dayjs("2022-04-17T15:30")
-  );
-
   const handleNoteTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNoteText(event.target.value);
   };
 
+  const englishToPolishDays: Record<string, string> = {
+    Mon: "Poniedziałek",
+    Tue: "Wtorek",
+    Wed: "Środa",
+    Thu: "Czwartek",
+    Fri: "Piątek",
+    Sat: "Sobota",
+    Sun: "Niedziela",
+  };
+  let res = "";
+  if (selectedSlot) {
+    const day = selectedSlot.start.toString();
+    const space = day.indexOf(" ");
+    const englishDay = day.slice(0, space);
+    res = englishToPolishDays[englishDay] || englishDay;
+  }
+
   return (
-    <div>
+    <div ref={calendarRef}>
       {showNote && (
         <div className="note-pick">
-          <h1>Wybrany dzień: {moment(selectedDate).format("DD/MM/YYYY")}</h1>
+          <h1>
+            Wybrany dzień: {moment(selectedDate).format("DD/MM/YYYY")} ({res})
+          </h1>
 
           <Box
             component="form"
@@ -165,7 +178,11 @@ export function Calendar() {
               />
             </div>
 
-            <Button variant="contained" onClick={handleAddNote}>
+            <Button
+              variant="contained"
+              onClick={handleAddNote}
+              sx={{ minWidth: "100%" }}
+            >
               Dodaj notatkę
             </Button>
           </Box>
