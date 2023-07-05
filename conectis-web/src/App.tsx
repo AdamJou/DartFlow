@@ -14,7 +14,7 @@ function App() {
   let component;
   console.log(window.location);
   console.log(window.location.pathname);
-  
+
   return (
     <>
       <MuiNavbar />
@@ -30,8 +30,6 @@ function App() {
         <Route path="/login" element={<MuiLogin />} />
         <Route path="/calendar" element={<Calendar />} />
       </Routes>
-      
-      
     </>
   );
 }

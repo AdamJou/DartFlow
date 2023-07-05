@@ -27,6 +27,15 @@ code {
 
   gap: 1rem;
   text-align: center;
-  max-width: 400px;
+  max-width: min-content;
   margin: auto;
+}
+
+.rbc-day-bg {
+  cursor: pointer;
+  z-index: 1;
+}
+
+.rbc-day-bg:hover {
+  background-color: rgb(100, 139, 173);
 }
