@@ -35,7 +35,23 @@ code {
   cursor: pointer;
   z-index: 1;
 }
-
 .rbc-day-bg:hover {
-  background-color: rgb(100, 139, 173);
+  background-color: rgb(93, 184, 244);
+}
+
+.rbc-day-bg:hover::after {
+  width: 100%;
+  content: "Dodaj notatke";
+  display: grid;
+  place-items: center;
+  color: white;
+  height: 100%;
+}
+
+.rbc-date-cell:hover {
+  background-color: rgb(70, 140, 187);
+}
+.rbc-button-link {
+  width: 100%;
+  text-align: right;
 }

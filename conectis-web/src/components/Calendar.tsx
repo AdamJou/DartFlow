@@ -16,6 +16,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { log } from "console";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,9 +27,6 @@ interface Note {
 }
 
 const ws = new WebSocket("ws://localhost:8082");
-
-
-
 
 export function Calendar() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -85,6 +83,19 @@ export function Calendar() {
         end: endDateTime.toDate(),
         title: noteText,
       };
+
+      console.log("SELECTED DATE: " + selectedDate);
+      console.log("SELECTED START TIME " + selectedStartTime);
+      console.log("STARTDATETIME " + startDateTime);
+      console.log("STARTDATETIME .todate " + startDateTime.toDate());
+      console.log("STRINGIFY " + JSON.stringify(newNote.start));
+      console.log("newNote " + newNote.start);
+
+      ws.send(
+        JSON.stringify({
+          ...newNote,
+        })
+      );
       setNotes((prevNotes) => [...prevNotes, newNote]);
       setSelectedSlot(null);
       setSelectedDate(null);
@@ -92,18 +103,10 @@ export function Calendar() {
       setSelectedEndTime("");
       setNoteText("");
       setShowNote(false);
-
     }
-    
-    ws.send(JSON.stringify({
-        note: noteText
-    }));
-
   };
 
   ws.addEventListener("click", handleAddNote);
-
-  
 
   const isEndTimeValid = (startTime: string, endTime: string) => {
     const startHour = parseInt(startTime.substring(0, 2));
@@ -198,4 +201,3 @@ export function Calendar() {
     </div>
   );
 }
-
