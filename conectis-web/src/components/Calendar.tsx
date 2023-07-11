@@ -16,8 +16,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { log } from "console";
+import { io } from "socket.io-client";
 
+const socket = io("http://localhost:3001");
 const localizer = momentLocalizer(moment);
 
 interface Note {
@@ -25,8 +26,6 @@ interface Note {
   end: Date;
   title: string;
 }
-
-const ws = new WebSocket("ws://localhost:8082");
 
 export function Calendar() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -91,7 +90,8 @@ export function Calendar() {
       console.log("STRINGIFY " + JSON.stringify(newNote.start));
       console.log("newNote " + newNote.start);
 
-      ws.send(
+      socket.emit(
+        "sendNote",
         JSON.stringify({
           ...newNote,
         })
@@ -106,7 +106,11 @@ export function Calendar() {
     }
   };
 
-  ws.addEventListener("click", handleAddNote);
+  useEffect(() => {
+    socket.on("loadNotes", (data) => {
+      setNotes(data);
+    });
+  }, [socket]);
 
   const isEndTimeValid = (startTime: string, endTime: string) => {
     const startHour = parseInt(startTime.substring(0, 2));
