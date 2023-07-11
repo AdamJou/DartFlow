@@ -4,19 +4,17 @@ import {
   CalendarProps,
   momentLocalizer,
 } from "react-big-calendar";
-
 import { Box, TextField, Button } from "@mui/material";
-
 import moment from "moment";
 import "moment/locale/pl";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
 import dayjs, { Dayjs } from "dayjs";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { io } from "socket.io-client";
+import eventsData from "../events.json"; // Importowanie pliku JSON jako moduł
 
 const socket = io("http://localhost:3001");
 const localizer = momentLocalizer(moment);
@@ -83,19 +81,8 @@ export function Calendar() {
         title: noteText,
       };
 
-      console.log("SELECTED DATE: " + selectedDate);
-      console.log("SELECTED START TIME " + selectedStartTime);
-      console.log("STARTDATETIME " + startDateTime);
-      console.log("STARTDATETIME .todate " + startDateTime.toDate());
-      console.log("STRINGIFY " + JSON.stringify(newNote.start));
-      console.log("newNote " + newNote.start);
+      socket.emit("sendNote", JSON.stringify({ ...newNote }));
 
-      socket.emit(
-        "sendNote",
-        JSON.stringify({
-          ...newNote,
-        })
-      );
       setNotes((prevNotes) => [...prevNotes, newNote]);
       setSelectedSlot(null);
       setSelectedDate(null);
@@ -107,10 +94,14 @@ export function Calendar() {
   };
 
   useEffect(() => {
-    socket.on("loadNotes", (data) => {
-      setNotes(data);
-    });
-  }, [socket]);
+    // Wczytaj dane z pliku JSON
+    const loadedNotes: Note[] = eventsData.map((item: any) => ({
+      start: new Date(item.start),
+      end: new Date(item.end),
+      title: item.title,
+    }));
+    setNotes(loadedNotes);
+  }, []);
 
   const isEndTimeValid = (startTime: string, endTime: string) => {
     const startHour = parseInt(startTime.substring(0, 2));
@@ -200,6 +191,7 @@ export function Calendar() {
         localizer={localizer}
         selectable
         events={notes}
+        defaultView="month"
         onSelectSlot={handleDateSelect}
       />
     </div>
