@@ -9,8 +9,10 @@ import { MuiRegister } from "./components/MuiRegister";
 import { MuiLogin } from "./components/MuiLogin";
 import { Route, Routes } from "react-router-dom";
 import { Calendar } from "./components/Calendar";
+import { useEffect } from "react";
 
 function App() {
+
   let component;
   console.log(window.location);
   console.log(window.location.pathname);

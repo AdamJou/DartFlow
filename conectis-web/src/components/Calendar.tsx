@@ -39,6 +39,7 @@ export function Calendar() {
   const [showNote, setShowNote] = useState(false);
   const [noteText, setNoteText] = useState("");
 
+
   const calendarRef = useRef<HTMLDivElement | null>(null);
 
   const handleDateSelect = (slotInfo: any) => {
@@ -94,6 +95,8 @@ export function Calendar() {
       setShowNote(false);
 
     }
+
+
     
     ws.send(JSON.stringify({
         note: noteText
