@@ -6,10 +6,10 @@ const cors = require("cors");
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  user: "dartflow",
+  user: "dartflow_user",
   host: "localhost",
-  database: "dartflow_db",
-  password: "dartflow",
+  database: "dartflowdb",
+  password: "root",
   port: 5432,
 });
 
@@ -37,27 +37,6 @@ app.get("/getNotes", async (req, res) => {
   } catch (error) {
     console.error("Error fetching notes from the database:", error);
     res.status(500).json({ error: "Error fetching notes from the database" });
-  }
-});
-
-app.delete("/deleteEvent", async (req, res) => {
-  const eventToDelete = req.body;
-
-  try {
-    const client = await pool.connect();
-    const result = await client.query("DELETE FROM notes WHERE id = $1", [
-      eventToDelete.id,
-    ]);
-    client.release();
-
-    if (result.rowCount === 0) {
-      res.status(404).json({ message: "Event not found" });
-    } else {
-      res.status(200).json({ message: "Event deleted successfully" });
-    }
-  } catch (error) {
-    console.error("Error deleting event from the database:", error);
-    res.status(500).json({ error: "Error deleting event from the database" });
   }
 });
 
