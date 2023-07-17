@@ -34,18 +34,54 @@ export function Calendar() {
 
   const calendarRef = React.createRef<HTMLDivElement>();
 
-  const handleDateSelect = (slotInfo: any) => {
-    setSelectedSlot(slotInfo);
-    setSelectedDate(slotInfo.start);
-    setShowNote(true);
-  };
-
   const handleStartTimeChange = (time: Dayjs | null) => {
     if (time) {
       const startTime = time.format("HH:mm");
       setSelectedStartTime(startTime);
     } else {
       setSelectedStartTime("");
+    }
+  };
+
+  const handleDateSelect = (slotInfo: any) => {
+    setSelectedSlot(slotInfo);
+    setSelectedDate(slotInfo.start);
+    setShowNote(true);
+
+    // Sprawdź, czy w wybranym slocie znajduje się event
+    const existingEvent = notes.find(
+      (event) =>
+        dayjs(event.start).isSame(slotInfo.start) &&
+        dayjs(event.end).isSame(slotInfo.end)
+    );
+
+    if (existingEvent) {
+      // Jeśli event istnieje, zapytaj użytkownika, czy chce go usunąć
+      const shouldDelete = window.confirm("Czy chcesz usunąć ten event?");
+      if (shouldDelete) {
+        deleteEvent(existingEvent);
+      }
+    }
+  };
+
+  const deleteEvent = async (eventToDelete: Note) => {
+    try {
+      const response = await fetch("http://localhost:3001/deleteEvent", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventToDelete),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Pobierz notatki zaktualizowane po usunięciu eventu
+      fetchNotesFromServer();
+    } catch (error) {
+      console.error("Error deleting event:", error);
     }
   };
 
