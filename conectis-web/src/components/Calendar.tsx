@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Calendar as BigCalendar,
   CalendarProps,
@@ -10,11 +10,9 @@ import "moment/locale/pl";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import dayjs, { Dayjs } from "dayjs";
-
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { io } from "socket.io-client";
-import eventsData from "../events.json"; // Importowanie pliku JSON jako moduł
 
 const socket = io("http://localhost:3001");
 const localizer = momentLocalizer(moment);
@@ -34,7 +32,7 @@ export function Calendar() {
   const [showNote, setShowNote] = useState(false);
   const [noteText, setNoteText] = useState("");
 
-  const calendarRef = useRef<HTMLDivElement | null>(null);
+  const calendarRef = React.createRef<HTMLDivElement>();
 
   const handleDateSelect = (slotInfo: any) => {
     setSelectedSlot(slotInfo);
@@ -81,8 +79,7 @@ export function Calendar() {
         title: noteText,
       };
 
-      socket.emit("sendNote", JSON.stringify({ ...newNote }));
-
+      socket.emit("sendNote", JSON.stringify(newNote));
       setNotes((prevNotes) => [...prevNotes, newNote]);
       setSelectedSlot(null);
       setSelectedDate(null);
@@ -94,14 +91,31 @@ export function Calendar() {
   };
 
   useEffect(() => {
-    // Wczytaj dane z pliku JSON
-    const loadedNotes: Note[] = eventsData.map((item: any) => ({
-      start: new Date(item.start),
-      end: new Date(item.end),
-      title: item.title,
-    }));
-    setNotes(loadedNotes);
+    // Pobierz notatki z bazy danych po załadowaniu komponentu
+    fetchNotesFromServer();
+
+    // Połączenie z serwerem WebSocket i otrzymywanie danych notatek
+    socket.on("loadNotes", (notesFromServer: Note[]) => {
+      setNotes(notesFromServer);
+    });
+
+    return () => {
+      socket.disconnect(); // Rozłączenie po opuszczeniu komponentu
+    };
   }, []);
+
+  const fetchNotesFromServer = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/getNotes");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const notesFromServer = await response.json();
+      setNotes(notesFromServer);
+    } catch (error) {
+      console.error("Error fetching notes from the server:", error);
+    }
+  };
 
   const isEndTimeValid = (startTime: string, endTime: string) => {
     const startHour = parseInt(startTime.substring(0, 2));

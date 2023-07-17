@@ -3,14 +3,17 @@ const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: 'dartflow',
+  host: 'localhost',
+  database: 'dartflow_db',
+  password: 'dartflow',
+  port: 5432,
+});
 
 app.use(cors());
-
-const eventsFilePath = path.join(__dirname, "../events.json");
-
-const events = loadEventsFromFile();
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -20,41 +23,59 @@ const io = new Server(server, {
   },
 });
 
+app.get("/getNotes", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM notes');
+    const notesFromDB = result.rows.map(row => ({
+      start: row.start_time,
+      end: row.end_time,
+      title: row.note
+    }));
+    client.release();
+    res.status(200).json(notesFromDB);
+  } catch (error) {
+    console.error("Error fetching notes from the database:", error);
+    res.status(500).json({ error: "Error fetching notes from the database" });
+  }
+});
+
 io.on("connection", (socket) => {
-  socket.emit("loadNotes", events);
+  fetchNotesFromDB(); // Fetch initial notes from the database and send them to the connected client
 
   console.log(`User connected ${socket.id}`);
+
   socket.on("sendNote", (data) => {
     const noteInfo = JSON.parse(data);
-    injectEvent(noteInfo);
+    insertNoteToDB(noteInfo); // Insert the new note into the database
+    console.log(noteInfo);
     console.log(data);
-    socket.broadcast.emit("loadNotes", events);
-
-    saveEventsToFile(events);
+    fetchNotesFromDB(); // Fetch updated notes from the database and broadcast them to all clients
   });
 });
 
-function loadEventsFromFile() {
-  try {
-    const data = fs.readFileSync(eventsFilePath, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Błąd podczas wczytywania pliku events.json", error);
-    return [];
-  }
-}
-
-function injectEvent(newEvent) {
-  events.unshift(newEvent);
-}
-
-function saveEventsToFile(events) {
-  const dataToSave = JSON.stringify(events, null, 2);
-  fs.writeFile(eventsFilePath, dataToSave, (err) => {
-    if (err) {
-      console.log(`Error writing to file: ${err}`);
+function fetchNotesFromDB() {
+  pool.query('SELECT * FROM notes', (error, results) => {
+    if (error) {
+      console.error("Error fetching notes from the database:", error);
     } else {
-      console.log("Events saved to file.");
+      const notesFromDB = results.rows.map(row => ({
+        start: row.start_time,
+        end: row.end_time,
+        title: row.note
+      }));
+      io.emit("loadNotes", notesFromDB); // Send the notes to all connected clients
+    }
+  });
+}
+
+function insertNoteToDB(noteInfo) {
+  const { start, end, title } = noteInfo;
+  pool.query('INSERT INTO notes (start_time, end_time, note) VALUES ($1, $2, $3) RETURNING *', [start, end, title], (error, result) => {
+    if (error) {
+      console.error("Error inserting note into the database:", error);
+    } else {
+      console.log("Note inserted into the database:", result.rows[0]);
     }
   });
 }
